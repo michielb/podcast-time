@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+build/
+dist/
+.venv/
+venv/
+
+# User data and generated outputs — people should bring their own list
+podcasts.txt
+podcasts.json
+feeds.json
+episodes.json
+report.md
+*.png
+!docs/*.png
+
+# Cached test tools
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Editors / OS
+.DS_Store
+.idea/
+.vscode/

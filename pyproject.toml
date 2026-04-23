@@ -1,0 +1,36 @@
+[project]
+name = "podcast-time"
+version = "0.1.0"
+description = "How many hours a week would you spend keeping up with all your podcast subscriptions?"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Michiel Berger" }]
+keywords = ["podcast", "rss", "time-budget", "itunes", "cli"]
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Environment :: Console",
+    "Topic :: Multimedia :: Sound/Audio",
+    "Topic :: Utilities",
+]
+dependencies = [
+    "feedparser>=6.0.11",
+    "requests>=2.31.0",
+    "rapidfuzz>=3.0.0",
+    "matplotlib>=3.7.0",
+    "seaborn>=0.12.0",
+]
+
+[project.scripts]
+podcast-time = "podcast_time.cli:main"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]

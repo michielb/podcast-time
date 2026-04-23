@@ -1,0 +1,21 @@
+# Your ranked podcast list.
+#
+# Format: one show per line, in order of preference (top = most preferred).
+# Blank lines and lines starting with # are ignored.
+#
+# Most shows can be resolved automatically from their title. For the rest
+# you can append "| <feed-url>" or "| apple:<id>" to override the lookup.
+#
+# See README.md for the "not found" flow — tldr: run `podcast-time identify <url>`
+# to get a copy-paste-ready override line.
+
+This American Life
+Radiolab
+Freakonomics Radio
+Planet Money
+The Daily
+Hard Fork
+Acquired
+Lenny's Podcast
+More or Less | https://podcasts.files.bbci.co.uk/p02nrss1.rss
+Cautionary Tales with Tim Harford | apple:1486005829
