@@ -67,10 +67,10 @@ Feed discovery uses the Apple Podcasts (iTunes) Search API. It's free and usuall
 
 The flow is **flag, review, override, re-run**. Every step is idempotent.
 
-### 1. Run `find-feeds`; it flags low-confidence matches
+### 1. Run the pipeline; it flags low-confidence matches
 
 ```bash
-podcast-time find-feeds
+podcast-time run
 ```
 
 You'll see a summary. Anything with a fuzzy-match score below ~75 is flagged for review:
@@ -133,13 +133,25 @@ Is this the one? Add this line to podcasts.txt:
 - a direct RSS URL — parsed to confirm title and episode count
 - a plain free-text search term — same engine as `find-feeds`
 
-### 3. Paste the override into `podcasts.txt`, re-run `find-feeds`
+### 3. Paste the override into `podcasts.txt`, re-run the pipeline
 
 ```bash
-podcast-time find-feeds
+podcast-time run
 ```
 
-The override is honored (no lookup), the flag is cleared, and `feeds.json` is regenerated. The process is idempotent: same input → same output, every time.
+The override is honored (no lookup), the flag is cleared, and every already-confident match is served from the `feeds.json` cache so you're only spending iTunes calls on shows you just changed. The process is idempotent: same input → same output, every time.
+
+The full loop looks like:
+
+```bash
+podcast-time run                                       # flags 2 shows
+podcast-time identify https://open.spotify.com/show/XX # -> copy the suggested line
+$EDITOR podcasts.txt                                   # paste it in
+podcast-time run                                       # flags 1 show
+podcast-time identify https://open.spotify.com/show/YY
+$EDITOR podcasts.txt
+podcast-time run                                       # clean report + chart
+```
 
 ### 4. What if there is no public RSS?
 
