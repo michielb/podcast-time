@@ -14,13 +14,23 @@ Ranking without a time budget is wishful thinking. This tool turns your ranking 
 
 ## Install
 
+Python ≥ 3.10. Two ways to install:
+
+**Quickest** — one command, no clone:
+
 ```bash
 pipx install git+https://github.com/michielb/podcast-time
-# or, from a clone:
+```
+
+**From a clone** (if you want to read the code or hack on it):
+
+```bash
+git clone https://github.com/michielb/podcast-time.git
+cd podcast-time
 pip install .
 ```
 
-Python ≥ 3.10.
+Either way you get a `podcast-time` command on your path.
 
 ## Quickstart
 
