@@ -76,13 +76,19 @@ def read_entries(path: Path) -> list[Entry]:
         line = raw.strip()
         if not line or line.startswith("#"):
             continue
+        # Split on the LAST `|` only if the tail looks like a known override —
+        # otherwise `|` chars inside the title (e.g. "Lenny's Podcast: Product | Career | Growth")
+        # would be mistaken for separators.
+        title, override = line, None
         if "|" in line:
-            title, override = line.split("|", 1)
-            title = title.strip()
-            override = override.strip() or None
-        else:
-            title = line
-            override = None
+            head, _, tail = line.rpartition("|")
+            tail_s = tail.strip().lower()
+            if (
+                tail_s.startswith(("http://", "https://", "apple:", "estimate:"))
+                or tail_s == "skip"
+            ):
+                title = head.strip()
+                override = tail.strip() or None
         if not title:
             continue
         entries.append(Entry(rank=len(entries) + 1, title=title, override=override))
