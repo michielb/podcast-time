@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import datetime
 from pathlib import Path
 from statistics import median
 
@@ -11,6 +12,27 @@ REPORT_FILENAME = "report.md"
 def fmt_hm(minutes: float) -> str:
     h, m = divmod(int(round(minutes)), 60)
     return f"{h}:{m:02d}"
+
+
+def eps_per_week(feed: dict, n_eps: int, window_weeks: float) -> float:
+    """Cadence from actual episode spacing: 7 / avg_gap_days.
+
+    Falls back to n_eps/window_weeks when span can't be measured (n<2 or dates missing).
+    """
+    if n_eps < 2:
+        return n_eps / window_weeks
+    earliest = feed.get("earliest_in_window")
+    latest = feed.get("latest_in_window")
+    if not earliest or not latest:
+        return n_eps / window_weeks
+    try:
+        span_days = (datetime.fromisoformat(latest) - datetime.fromisoformat(earliest)).total_seconds() / 86400.0
+    except ValueError:
+        return n_eps / window_weeks
+    if span_days <= 0:
+        return n_eps / window_weeks
+    avg_gap_days = span_days / (n_eps - 1)
+    return 7.0 / avg_gap_days
 
 
 def compute_rows(data: dict) -> list[dict]:
@@ -44,14 +66,14 @@ def compute_rows(data: dict) -> list[dict]:
                 "note": feed.get("error") or "no episodes in window",
             })
             continue
-        eps_per_week = n_eps / window_weeks
+        epw = eps_per_week(feed, n_eps, window_weeks)
         median_min = median(durations) / 60.0
         rows.append({
             "rank": feed["rank"],
             "name": feed["title"],
-            "eps_per_week": eps_per_week,
+            "eps_per_week": epw,
             "median_min": median_min,
-            "min_per_week": eps_per_week * median_min,
+            "min_per_week": epw * median_min,
             "note": note,
         })
     return rows

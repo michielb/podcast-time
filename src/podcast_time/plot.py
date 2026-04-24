@@ -9,6 +9,8 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 import seaborn as sns
 
+from .analyze import eps_per_week
+
 CHART_FILENAME = "podcast-stacked-bars.png"
 
 _FONT_SCALES = {
@@ -46,7 +48,7 @@ def render(
             est = f["estimate"]
             mpw = est.get("eps_per_week", 0.0) * est.get("median_min", 0.0)
         elif durs:
-            mpw = (len(durs) / window_weeks) * (median(durs) / 60.0)
+            mpw = eps_per_week(f, len(durs), window_weeks) * (median(durs) / 60.0)
         else:
             mpw = 0.0
         rows.append({"rank": f["rank"], "name": f["title"], "mpw": mpw})
