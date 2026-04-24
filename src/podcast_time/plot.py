@@ -30,13 +30,17 @@ def render(
     font_size: str = "normal",
     title_text: str | None = None,
     subtitle: str | None = None,
-    x_label: str = "Cumulative listening time per week (at 1x)",
+    x_label: str | None = None,
+    speed: float = 1.0,
 ) -> None:
     """Render the stacked bar chart.
 
     data: contents of episodes.json (dict with 'window_days' and 'feeds')
+    speed: playback speed to scale durations by (1.0 = no scaling)
     """
     scale = _FONT_SCALES.get(font_size, 1.0)
+    if x_label is None:
+        x_label = f"Cumulative listening time per week (at {speed:g}x)"
 
     feeds = sorted(data["feeds"], key=lambda x: x["rank"])
     window_weeks = data["window_days"] / 7.0
@@ -51,7 +55,7 @@ def render(
             mpw = eps_per_week(f, len(durs), window_weeks) * (median(durs) / 60.0)
         else:
             mpw = 0.0
-        rows.append({"rank": f["rank"], "name": f["title"], "mpw": mpw})
+        rows.append({"rank": f["rank"], "name": f["title"], "mpw": mpw / speed})
 
     n = len(rows)
     if n == 0:

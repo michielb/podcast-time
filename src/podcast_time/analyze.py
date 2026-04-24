@@ -82,7 +82,7 @@ def compute_rows(data: dict) -> list[dict]:
 def print_table(rows: list[dict]) -> None:
     print(
         f"\n{'#':>3}  {'Podcast':<45} {'eps/wk':>7} {'med min':>8} "
-        f"{'min/wk':>7} {'cum 1x':>8} {'cum 1.5x':>9} {'cum 2x':>8}"
+        f"{'min/wk':>7} {'cum 1.5x':>9} {'cum 1.8x':>9} {'cum 2x':>8}"
     )
     print("-" * 110)
     cum = 0.0
@@ -92,13 +92,13 @@ def print_table(rows: list[dict]) -> None:
         print(
             f"{r['rank']:>3}  {r['name'][:45]:<45} "
             f"{r['eps_per_week']:>7.2f} {r['median_min']:>8.1f} {r['min_per_week']:>7.1f} "
-            f"{fmt_hm(cum):>8} {fmt_hm(cum/1.5):>9} {fmt_hm(cum/2.0):>8}{note}"
+            f"{fmt_hm(cum/1.5):>9} {fmt_hm(cum/1.8):>9} {fmt_hm(cum/2.0):>8}{note}"
         )
     total = sum(r["min_per_week"] for r in rows)
     print("-" * 110)
     print(
-        f"TOTAL:  {fmt_hm(total)} at 1x  |  "
-        f"{fmt_hm(total/1.5)} at 1.5x  |  {fmt_hm(total/2.0)} at 2x"
+        f"TOTAL:  {fmt_hm(total/1.5)} at 1.5x  |  "
+        f"{fmt_hm(total/1.8)} at 1.8x  |  {fmt_hm(total/2.0)} at 2x"
     )
 
 
@@ -107,7 +107,7 @@ def write_report(rows: list[dict], path: Path, window_days: int) -> None:
     lines.append("# Podcast time budget\n")
     lines.append(f"Window: last {window_days} days.\n")
     lines.append("")
-    lines.append("| # | Podcast | eps/wk | median min | min/wk | cum 1x | cum 1.5x | cum 2x |")
+    lines.append("| # | Podcast | eps/wk | median min | min/wk | cum 1.5x | cum 1.8x | cum 2x |")
     lines.append("|---|---|---:|---:|---:|---:|---:|---:|")
     cum = 0.0
     for r in rows:
@@ -116,13 +116,13 @@ def write_report(rows: list[dict], path: Path, window_days: int) -> None:
         lines.append(
             f"| {r['rank']} | {name} | {r['eps_per_week']:.2f} | "
             f"{r['median_min']:.1f} | {r['min_per_week']:.1f} | "
-            f"{fmt_hm(cum)} | {fmt_hm(cum/1.5)} | {fmt_hm(cum/2.0)} |"
+            f"{fmt_hm(cum/1.5)} | {fmt_hm(cum/1.8)} | {fmt_hm(cum/2.0)} |"
         )
     total = sum(r["min_per_week"] for r in rows)
     lines.append("")
     lines.append(
-        f"**Total:** {fmt_hm(total)} at 1x · "
-        f"{fmt_hm(total/1.5)} at 1.5x · "
+        f"**Total:** {fmt_hm(total/1.5)} at 1.5x · "
+        f"{fmt_hm(total/1.8)} at 1.8x · "
         f"{fmt_hm(total/2.0)} at 2x"
     )
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")

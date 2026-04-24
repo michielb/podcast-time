@@ -54,6 +54,14 @@ def build_parser() -> argparse.ArgumentParser:
     p_plot.add_argument(
         "--title", default=None, help="Override chart title (default: auto)",
     )
+    p_plot.add_argument(
+        "--speed", type=float, default=1.0,
+        help="Playback speed to scale durations by (default: 1.0)",
+    )
+    p_plot.add_argument(
+        "--out", default=None,
+        help="Output filename (default: podcast-stacked-bars.png, or -<speed>x variant)",
+    )
 
     p_run = sub.add_parser("run", help="find-feeds + fetch + analyze + plot")
     _add_dir_arg(p_run)
@@ -120,17 +128,25 @@ def cmd_analyze(workdir: Path) -> int:
     return 0
 
 
-def cmd_plot(workdir: Path, fonts: str, title: str | None) -> int:
+def cmd_plot(workdir: Path, fonts: str, title: str | None, speed: float = 1.0, out_name: str | None = None) -> int:
     from .episodes import load_episodes, EPISODES_FILENAME
     from .plot import render, CHART_FILENAME
 
     data = load_episodes(workdir / EPISODES_FILENAME)
-    out = workdir / CHART_FILENAME
+    if out_name:
+        filename = out_name
+    elif speed != 1.0:
+        stem = CHART_FILENAME.rsplit(".", 1)[0]
+        filename = f"{stem}-{speed:g}x.png"
+    else:
+        filename = CHART_FILENAME
+    out = workdir / filename
     render(
         data, out,
         font_size=fonts,
         title_text=title,
         subtitle="Each row adds one podcast — wide segments are the time hogs",
+        speed=speed,
     )
     print(f"Wrote {out}")
     return 0
@@ -174,7 +190,7 @@ def main(argv: list[str] | None = None) -> int:
         if args.cmd == "analyze":
             return cmd_analyze(workdir)
         if args.cmd == "plot":
-            return cmd_plot(workdir, fonts=args.fonts, title=args.title)
+            return cmd_plot(workdir, fonts=args.fonts, title=args.title, speed=args.speed, out_name=args.out)
         if args.cmd == "run":
             return cmd_run(workdir, window_days=args.window_days, fonts=args.fonts)
     except FileNotFoundError as e:
